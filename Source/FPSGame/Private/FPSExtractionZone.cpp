@@ -2,6 +2,7 @@
 
 #include "FPSExtractionZone.h"
 #include "Components/BoxComponent.h"
+#include "Components/DecalComponent.h"
 
 // Sets default values
 AFPSExtractionZone::AFPSExtractionZone()
@@ -18,6 +19,10 @@ AFPSExtractionZone::AFPSExtractionZone()
 
 	//	Another way to specify OverlapEvent with Actor (like NotifyActorBeginOverlap in FPSObjectiveActor)
 	OverlapComp->OnComponentBeginOverlap.AddDynamic(this, &AFPSExtractionZone::HandleOverlap);
+
+	DecalComp = CreateDefaultSubobject<UDecalComponent>(TEXT("DecalComp"));
+	DecalComp->DecalSize = FVector(200.0f, 200.f, 200.f);
+	DecalComp->SetupAttachment(RootComponent);
 }
 
 
