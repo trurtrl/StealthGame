@@ -14,6 +14,7 @@ AFPSAIGuard::AFPSAIGuard()
 
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComp"));
 
+	GuardState = EAIState::Idle;
 }
 
 // Called when the game starts or when spawned
@@ -47,10 +48,14 @@ void AFPSAIGuard::OnPawnSeen(APawn* SeenPawn)
 		GM->CompleteMission(SeenPawn, false);
 	}
 
+	SetGuardState(EAIState::Alerted);
 }
 
 void AFPSAIGuard::OnNoiseHeard(APawn* NoiseInstigator, const FVector& Location, float Volume)
 {
+	//	We don't need suspect smb in this case
+	if (GuardState == EAIState::Alerted) return;
+
 	DrawDebugSphere(GetWorld(), Location, 32.f, 12, FColor::Green, false, 10.f);
 
 	//	define vector to rotate towards the sound source
@@ -65,9 +70,25 @@ void AFPSAIGuard::OnNoiseHeard(APawn* NoiseInstigator, const FVector& Location, 
 	
 //	GetWorldTimerManager().ClearTimer(TimerHandle_ResetOrientation);
 	GetWorldTimerManager().SetTimer(TimerHandle_ResetOrientation, this, &AFPSAIGuard::ResetOrientation, 2.0f);
+
+	SetGuardState(EAIState::Suspicious);
+
 }
 
 void AFPSAIGuard::ResetOrientation()
 {
+	if (GuardState == EAIState::Alerted) return;
+
 	SetActorRotation(OriginalRotation);
+
+	SetGuardState(EAIState::Idle);
+}
+
+void AFPSAIGuard::SetGuardState(EAIState NewState)
+{
+	if (GuardState == NewState) return;
+
+	GuardState = NewState;
+
+	OnStateChanged(NewState);
 }

@@ -7,6 +7,15 @@
 #include "FPSAIGuard.generated.h"
 
 class UPawnSensingComponent;
+
+UENUM(Blueprinttype)
+enum class EAIState : uint8
+{
+	Idle,
+	Suspicious,
+	Alerted
+};
+
 	
 UCLASS()
 class FPSGAME_API AFPSAIGuard : public ACharacter
@@ -23,6 +32,9 @@ protected:
 
 	FRotator OriginalRotation;
 	FTimerHandle TimerHandle_ResetOrientation;
+	EAIState GuardState;
+
+	void SetGuardState(EAIState NewState);
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UPawnSensingComponent* PawnSensingComp;
@@ -35,6 +47,9 @@ protected:
 
 	UFUNCTION()
 	void ResetOrientation();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "AI")
+	void OnStateChanged(EAIState NewState);
 
 public:	
 	// Called every frame
