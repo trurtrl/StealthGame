@@ -22,6 +22,8 @@ void AFPSAIGuard::BeginPlay()
 
 	PawnSensingComp->OnSeePawn.AddDynamic(this, &AFPSAIGuard::OnPawnSeen);
 	PawnSensingComp->OnHearNoise.AddDynamic(this, &AFPSAIGuard::OnNoiseHeard);
+
+	OriginalRotation = GetActorRotation();
 }
 
 // Called every frame
@@ -42,4 +44,22 @@ void AFPSAIGuard::OnPawnSeen(APawn* SeenPawn)
 void AFPSAIGuard::OnNoiseHeard(APawn* NoiseInstigator, const FVector& Location, float Volume)
 {
 	DrawDebugSphere(GetWorld(), Location, 32.f, 12, FColor::Green, false, 10.f);
+
+	//	define vector to rotate towards the sound source
+	FVector Direction = Location - GetActorLocation();
+	Direction.Normalize();
+
+	FRotator NewLookAt = FRotationMatrix::MakeFromX(Direction).Rotator();
+	NewLookAt.Pitch = 0.f;	//	to not rotate at pitch angles
+	NewLookAt.Roll = 0.f;
+
+	SetActorRotation(NewLookAt);
+	
+//	GetWorldTimerManager().ClearTimer(TimerHandle_ResetOrientation);
+	GetWorldTimerManager().SetTimer(TimerHandle_ResetOrientation, this, &AFPSAIGuard::ResetOrientation, 2.0f);
+}
+
+void AFPSAIGuard::ResetOrientation()
+{
+	SetActorRotation(OriginalRotation);
 }

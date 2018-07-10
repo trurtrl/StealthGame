@@ -21,6 +21,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	FRotator OriginalRotation;
+	FTimerHandle TimerHandle_ResetOrientation;
+
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UPawnSensingComponent* PawnSensingComp;
 
@@ -29,6 +32,9 @@ protected:
 
 	UFUNCTION()
 	void OnNoiseHeard(APawn* NoiseInstigator, const FVector& Location, float Volume);
+
+	UFUNCTION()
+	void ResetOrientation();
 
 public:	
 	// Called every frame
