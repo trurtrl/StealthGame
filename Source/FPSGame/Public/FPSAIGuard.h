@@ -32,9 +32,14 @@ protected:
 
 	FRotator OriginalRotation;
 	FTimerHandle TimerHandle_ResetOrientation;
-	EAIState GuardState;
 
 	void SetGuardState(EAIState NewState);
+
+	UPROPERTY(ReplicatedUsing=OnRep_GuardState)
+	EAIState GuardState;
+
+	UFUNCTION()
+	void OnRep_GuardState();
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UPawnSensingComponent* PawnSensingComp;

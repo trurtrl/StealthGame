@@ -1,10 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+	// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "FPSAIGuard.h"
 #include "Perception/PawnSensingComponent.h"
 #include "DrawDebugHelpers.h"
 #include "FPSGameMode.h"
 #include "AI/Navigation/NavigationSystem.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 AFPSAIGuard::AFPSAIGuard()
@@ -126,10 +127,13 @@ void AFPSAIGuard::SetGuardState(EAIState NewState)
 	if (GuardState == NewState) return;
 
 	GuardState = NewState;
-
-	OnStateChanged(NewState);
+	OnRep_GuardState();
 }
 
+void AFPSAIGuard::OnRep_GuardState()
+{
+	OnStateChanged(GuardState);
+}
 
 void AFPSAIGuard::MoveToNextPatrolPoint()
 {
@@ -144,4 +148,12 @@ void AFPSAIGuard::MoveToNextPatrolPoint()
 	}
 
 	UNavigationSystem::SimpleMoveToActor(GetController(), CurrentPatrolPoint);
+}
+
+//	rule for replicating GuardState
+void AFPSAIGuard::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AFPSAIGuard, GuardState);
 }
