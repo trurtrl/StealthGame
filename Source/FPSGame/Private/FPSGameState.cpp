@@ -6,18 +6,6 @@
 
 void AFPSGameState::MulticastOnMissionComplete_Implementation(APawn* InstigatorPawn, bool bMissionSuccess)
 {
-	//	get all pawns that exist on the level
-//	for (FConstPawnIterator It = GetWorld()->GetPawnIterator(); It; It++)
-//	{
-//		APawn* Pawn = It->Get();
-//
-		//	and ...
-//		if (Pawn && Pawn->IsLocallyControlled())
-//		{
-//			Pawn->DisableInput(nullptr);
-//		}
-//	}
-
 	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; It++)
 	{
 		AFPSPlayerController* PC = Cast<AFPSPlayerController>(It->Get());
@@ -25,7 +13,7 @@ void AFPSGameState::MulticastOnMissionComplete_Implementation(APawn* InstigatorP
 		{
 			PC->OnMissionComplete(InstigatorPawn, bMissionSuccess);
 
-			//	Replaces previous loop "for", that disables input
+			//	disable input
 			APawn* Pawn = PC->GetPawn();
 			if (Pawn)
 			{
